@@ -11,7 +11,7 @@ contract Sanction is TestHelper {
 
     function testAccessControlFail() public {
         vm.prank(bob);
-        vm.expectRevert("Not authorized!");
+        vm.expectRevert("Not authorized");
         sanctionToken.blacklistAdd(cobra);
     }
 
@@ -23,7 +23,7 @@ contract Sanction is TestHelper {
     function testTransferFail() public {
         vm.prank(alice);
         sanctionToken.blacklistAdd(bob);
-        vm.expectRevert("Receiver blacklisted!");
+        vm.expectRevert("Receiver blacklisted");
         sanctionToken.transfer(bob, 50 ether);
     }
 
@@ -39,7 +39,7 @@ contract Sanction is TestHelper {
         sanctionToken.transfer(bob, 50 ether);
         sanctionToken.blacklistAdd(bob);
         vm.prank(bob);
-        vm.expectRevert("Sender blacklisted!");
+        vm.expectRevert("Sender blacklisted");
         sanctionToken.transfer(cobra, 50 ether);
     }
 }

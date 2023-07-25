@@ -16,7 +16,7 @@ contract TestHelper is Test {
     address public cobra = address(0xc0b7a);
 
     function setUp() public virtual {
-        censorToken = new CensorERC20();
+        censorToken = new CensorERC20(alice);
         sanctionToken = new SanctionERC20([alice, address(this)]);
         reserveToken = new ReserveERC1363();
 
@@ -26,5 +26,8 @@ contract TestHelper is Test {
     function mintAdmin() public {
         sanctionToken.mint(alice, 1000 ether);
         sanctionToken.mint(address(this), 1000 ether);
+
+        // reserveToken.mint(alice, 1000 ether);
+        // reserveToken.mint(address(this), 1000 ether);
     }
 }

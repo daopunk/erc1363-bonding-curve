@@ -14,7 +14,7 @@ contract SanctionERC20 is ERC20("Sanction", "STN") {
     }
 
     modifier onlyAdmin() {
-        require(_admin[msg.sender] == true, "Not authorized!");
+        require(_admin[msg.sender] == true, "Not authorized");
         _;
     }
 
@@ -31,7 +31,7 @@ contract SanctionERC20 is ERC20("Sanction", "STN") {
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal view override {
-        require(_blacklist[to] != true, "Receiver blacklisted!");
-        require(_blacklist[from] != true, "Sender blacklisted!");
+        require(_blacklist[to] != true, "Receiver blacklisted");
+        require(_blacklist[from] != true, "Sender blacklisted");
     }
 }
