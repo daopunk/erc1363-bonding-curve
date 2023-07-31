@@ -1,14 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-/**
- * bancor formula by bancor
- * https://github.com/bancorprotocol/contracts
- * Modified from the original by Slava Balasanov
- * Split Power.sol out from BancorFormula.sol
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements;
- * and to You under the Apache License, Version 2.0. "
- */
 contract Power {
     string public version = "0.3";
 
@@ -19,7 +11,6 @@ contract Power {
 
     /**
      * The values below depend on _MAX_PRECISION. If you choose to change it:
-     * Apply the same change in file 'PrintIntScalingFactors.py', run it and paste the results below.
      */
     uint256 private constant _FIXED_1 = 0x080000000000000000000000000000000;
     uint256 private constant _FIXED_2 = 0x100000000000000000000000000000000;
@@ -27,14 +18,12 @@ contract Power {
 
     /**
      * The values below depend on _MAX_PRECISION. If you choose to change it:
-     * Apply the same change in file 'PrintLn2ScalingFactors.py', run it and paste the results below.
      */
     uint256 private constant _LN2_MANTISSA = 0x2c5c85fdf473de6af278ece600fcbda;
     uint8 private constant _LN2_EXPONENT = 122;
 
     /**
      * The values below depend on _MIN_PRECISION and _MAX_PRECISION. If you choose to change either one of them:
-     * Apply the same change in file 'PrintFunctionBancorFormula.py', run it and paste the results below.
      */
     uint256[128] private _maxExpArray;
 

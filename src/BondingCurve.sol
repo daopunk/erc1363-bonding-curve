@@ -11,14 +11,19 @@ contract BondingCurve is ERC20("Futuro", "FTR"), BancorFormula, Ownable {
 
     event Mint(uint256 amountMinted, uint256 totalCost);
     event Withdraw(uint256 amountWithdrawn, uint256 reward);
-    // event BondingCurve(string logString, uint256 value);
 
     /*
     * - Front-running attacks are currently mitigated by the following mechanisms:
     * TODO - minimum return argument for each conversion provides a way to define a minimum/maximum price for the transaction
     * - gas price limit prevents users from having control over the order of execution
     */
-    uint256 public gasPrice; // maximum gas price for bancor transactions in wei
+    uint256 public gasPrice = 1 * 10 ** 18; // maximum gas price for bancor transactions in wei
+
+    // verifies that the gas price is lower than the universal limit
+    modifier validGasPrice() {
+        require(tx.gasprice <= gasPrice, "BondingCurve: Gas price exceeds max allowed");
+        _;
+    }
 
     receive() external payable {
         buy();
@@ -49,17 +54,11 @@ contract BondingCurve is ERC20("Futuro", "FTR"), BancorFormula, Ownable {
         return true;
     }
 
-    // verifies that the gas price is lower than the universal limit
-    modifier validGasPrice() {
-        assert(tx.gasprice <= gasPrice);
-        _;
-    }
-
     /**
      * @dev Allows the owner to update the gas price limit
      * @param _gasPrice The new gas price limit
      */
-    function setGasPrice(uint256 _gasPrice) public onlyOwner {
+    function setGasPrice(uint256 _gasPrice) external onlyOwner {
         require(_gasPrice > 0);
         gasPrice = _gasPrice;
     }
