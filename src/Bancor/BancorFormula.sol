@@ -7,7 +7,7 @@ import "@openzeppelin/utils/math/SafeMath.sol";
 contract BancorFormula is Power {
     using SafeMath for uint256;
 
-    uint32 private constant _MAX_WEIGHT = 1000000;
+    uint32 private constant _MAX_WEIGHT = 1_000_000;
 
     /**
      * @dev given a token supply, connector balance, weight and a deposit amount (in the connector token),
@@ -30,7 +30,10 @@ contract BancorFormula is Power {
         uint256 _depositAmount
     ) public view returns (uint256) {
         // validate input
-        require(_supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= _MAX_WEIGHT);
+        require(
+            _supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= _MAX_WEIGHT,
+            "BancorFormula: calc purchase return error"
+        );
 
         // special case for 0 deposit amount
         if (_depositAmount == 0) {
@@ -73,7 +76,8 @@ contract BancorFormula is Power {
         // validate input
         require(
             _supply > 0 && _connectorBalance > 0 && _connectorWeight > 0 && _connectorWeight <= _MAX_WEIGHT
-                && _sellAmount <= _supply
+                && _sellAmount <= _supply,
+            "BancorFormula: calc sale return error"
         );
 
         // special case for 0 sell amount

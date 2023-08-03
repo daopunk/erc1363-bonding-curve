@@ -3,7 +3,9 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/token/ERC20/IERC20.sol";
 
-contract UntrustedEscrow {
+contract PaymentEscrow {
+    bool private _withdrawLock;
+
     mapping(address buyer => mapping(address seller => address token)) public paymentType;
     mapping(address seller => mapping(address buyer => uint256 amount)) public accountBal;
     mapping(address seller => mapping(address buyer => uint256 lock)) public accountLock;
@@ -16,11 +18,16 @@ contract UntrustedEscrow {
     }
 
     function withdraw(address buyer) external {
-        require(accountLock[msg.sender][buyer] <= block.timestamp);
+        require(!_withdrawLock, "Withdraw method is locked.");
+        require(accountLock[msg.sender][buyer] <= block.timestamp, "Time lock is valid.");
+
+        _withdrawLock = true;
+
         address token = paymentType[buyer][msg.sender];
         uint256 amount = accountBal[msg.sender][buyer];
-        require(IERC20(token).transfer(msg.sender, amount));
-    }
 
-    // TODO: check for vulnerabilities
+        require(IERC20(token).transfer(msg.sender, amount));
+
+        _withdrawLock = false;
+    }
 }
