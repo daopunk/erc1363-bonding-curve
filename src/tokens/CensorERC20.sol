@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {ERC20} from "@openzeppelin/token/ERC20/ERC20.sol";
 
 contract CensorERC20 is ERC20("Censor", "CSR") {
-    address private _centralAuthority;
+    address private immutable _centralAuthority;
 
     constructor(address centralAuthority) {
         _centralAuthority = centralAuthority;

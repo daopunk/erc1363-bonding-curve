@@ -13,13 +13,13 @@ contract UntrustedEscrow is TestHelper {
 
         vm.startPrank(bob);
         vm.expectRevert("Time lock is valid.");
-        escrow.withdraw(alice);
+        escrow.withdraw(1);
         vm.stopPrank();
 
         vm.warp(4 days);
 
         vm.startPrank(bob);
-        escrow.withdraw(alice);
+        escrow.withdraw(1);
         assertEq(sanctionToken.balanceOf(bob), 100 ether);
         vm.stopPrank();
     }

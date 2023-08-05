@@ -2,32 +2,37 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/token/ERC20/IERC20.sol";
+import "@openzeppelin/token/ERC20/utils/SafeERC20.sol";
 
 contract PaymentEscrow {
-    bool private _withdrawLock;
+    using SafeERC20 for IERC20;
 
-    mapping(address buyer => mapping(address seller => address token)) public paymentType;
-    mapping(address seller => mapping(address buyer => uint256 amount)) public accountBal;
-    mapping(address seller => mapping(address buyer => uint256 lock)) public accountLock;
+    uint256 _orderId;
+
+    mapping(address seller => mapping(uint256 orderId => uint256 amount)) private _payment;
+    mapping(uint256 orderId => uint256 lock) private _paymentLock;
+    mapping(uint256 orderId => IERC20 token) private _paymentType;
 
     function deposit(address token, uint256 amount, address seller) external {
         require(IERC20(token).transferFrom(msg.sender, address(this), amount));
-        paymentType[msg.sender][seller] = token;
-        accountBal[seller][msg.sender] = amount;
-        accountLock[seller][msg.sender] = block.timestamp + 3 days;
+        unchecked {
+            _orderId++;
+        }
+        uint256 orderId = _orderId;
+        _paymentType[orderId] = IERC20(token);
+        _paymentLock[orderId] = block.timestamp + 3 days;
+        _payment[seller][orderId] = amount;
     }
 
-    function withdraw(address buyer) external {
-        require(!_withdrawLock, "Withdraw method is locked.");
-        require(accountLock[msg.sender][buyer] <= block.timestamp, "Time lock is valid.");
+    function withdraw(uint256 orderId) external {
+        require(_paymentLock[orderId] < block.timestamp, "Time lock is valid.");
 
-        _withdrawLock = true;
+        IERC20 token = _paymentType[orderId];
+        _paymentType[orderId] = IERC20(address(0));
 
-        address token = paymentType[buyer][msg.sender];
-        uint256 amount = accountBal[msg.sender][buyer];
+        uint256 amount = _payment[msg.sender][orderId];
+        _payment[msg.sender][orderId] = 0;
 
-        require(IERC20(token).transfer(msg.sender, amount));
-
-        _withdrawLock = false;
+        token.safeTransfer(msg.sender, amount);
     }
 }
